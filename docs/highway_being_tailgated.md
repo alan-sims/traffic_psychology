@@ -1,4 +1,4 @@
-# Close Following Highway Being Tailgated
+# Close Following - Highway - Being Tailgated
 
 ## Scenario Overview
 
@@ -58,8 +58,6 @@ We will inspect the data to see if participants alter their driving behaviour ar
 | `[00].VehicleUpdate-roadInfo-laneId.0` | The ID of the lane that the participant is in |
 
 
-
-
 ## Quick Start Guide
 
 ### 1. Setup
@@ -100,8 +98,6 @@ Once the project is open, run this in the R console:
 ```r
 install.packages(c("tidyverse", "readr"))
 ```
-
-You're now ready to start analyzing data!
 
 ### 2. Data File Naming Convention
 Your CSV files must follow this naming pattern:
@@ -198,17 +194,30 @@ Your CSV files should contain tab-separated data with these columns:
 ```
 close_following/
 ├── R/
-│   └── highway_being_tailgated.R     # Analysis functions
-├── data/raw/highway/being_tailgated/  # Place your CSV files here
-├── output/                           # Summary files created here
-├── close-following.Rproj            # R project file
-└── README.md                        # This file
+│   ├── highway/
+│   │   ├── being_tailgated/
+│   │   │   └── highway_being_tailgated.R
+│   │   └── tailgating/
+│   │       └── highway_tailgating.R
+│   └── rural/
+│       ├── being_tailgated/
+│       │   └── rural_being_tailgated.R
+│       └── tailgating/
+│           └── rural_tailgating.R
+├── data/raw/
+│   ├── highway/
+│   │   ├── being_tailgated/    # Highway being tailgated CSV files
+│   │   └── tailgating/         # Highway tailgating CSV files
+│   └── rural/
+│       ├── being_tailgated/    # Rural being tailgated CSV files
+│       └── tailgating/         # Rural tailgating CSV files
+├── output/                     # Summary CSV files
+├── docs/                       # Documentation for each scenario
+├── scripts/                    # Additional analysis scripts
+├── close-following.Rproj      # R project file
+├── .gitignore                 # Git ignore file
+└── README.md                  # Project overview
 ```
 
-## Next Steps
-This framework can be extended to analyze the other three scenarios:
-- Highway tailgating
-- Rural being tailgated  
-- Rural tailgating
 
-Contact [your name/email] for questions or to contribute additional analysis functions.
+Contact [Alan Sims](mailto:alan.sims@griffithuni.edu.au) for questions or to contribute.
