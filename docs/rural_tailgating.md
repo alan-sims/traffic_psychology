@@ -4,13 +4,12 @@
 
 In this scenario, the participant drives along a rural road with one lane in each direction, separated by a double white line (no overtaking allowed). The road has a baseline speed limit of 100km/h, but drops to 60km/h when passing through a small township in the middle of the scenario.
 
-Throughout the drive, there are various cars traveling below the speed limit, creating opportunities for the participant to engage in tailgating behavior. Since overtaking is not allowed due to the double white lines, participants must decide whether to follow closely behind slower vehicles or maintain safe following distances.
+Throughout the drive, there are various cars traveling below the speed limit, creating opportunities for the participant to engage in tailgating behavior. Since overtaking is not allowed due to the double white lines, participants must decide whether to follow closely behind slower vehicles or maintain safe following distances, or even perform an illegal overtake.
 
 ## Traffic Behavior
 
 The scenario includes multiple slower vehicles that travel below the posted speed limits:
 - Cars traveling at 80-90km/h in 100km/h zones
-- Cars traveling at 50km/h in the 60km/h township section
 - These slower vehicles create frustration and tailgating opportunities
 
 We will analyze how participants respond to these slower vehicles, particularly their following distances, speed choices, and lateral movement patterns.
@@ -187,47 +186,6 @@ Your CSV files should contain tab-separated data with these columns:
 - Road distance
 - Lane ID
 
-## Interpretation Guide
-
-### Tailgating Behavior Indicators
-
-**Safe Following:**
-- Time headway > 3 seconds
-- Headway distance > 60 meters at 100km/h (> 30m at 60km/h)
-- Low frequency of close following events
-- Stable lateral position (low SDLP)
-
-**Moderate Tailgating:**
-- Time headway 1-3 seconds
-- Some close following events (< 2s)
-- Occasional braking due to following too closely
-- Slightly increased lateral movement
-
-**Aggressive Tailgating:**
-- Time headway < 1 second frequently
-- High frequency of very close following events
-- Frequent braking due to close following
-- High SDLP indicating frustration/lateral movement
-- Minimum headway distances < 20 meters
-
-### Section-Specific Expectations
-
-**Section 0 (Warm-up)**: Variable behavior as participants adjust
-
-**Section 1 (Rural 100km/h)**: Baseline tailgating behavior behind slow cars
-
-**Section 2 (Township 60km/h)**: Different following patterns due to lower speeds
-
-**Section 3 (Rural 100km/h)**: Return to higher speeds, potential for more aggressive tailgating
-
-### Key Comparisons
-
-**Rural vs Highway**: Compare with highway tailgating to see if road type affects following behavior
-
-**Speed Limit Effects**: Compare sections 1&3 (100km/h) vs section 2 (60km/h) for speed-dependent following
-
-**Individual Differences**: Identify participants who consistently tailgate vs those who maintain safe distances
-
 ## Troubleshooting
 
 **File not found errors:**
@@ -253,22 +211,30 @@ Your CSV files should contain tab-separated data with these columns:
 ## Project Structure
 ```
 close_following/
-├── R/rural/tailgating/
-│   └── rural_tailgating.R            # Analysis functions
-├── data/raw/rural/tailgating/        # Place your CSV files here
-├── output/                           # Summary files created here
-├── docs/                             # Documentation
-├── close-following.Rproj             # R project file
-└── README.md                         # Project overview
+├── R/
+│   ├── highway/
+│   │   ├── being_tailgated/
+│   │   │   └── highway_being_tailgated.R
+│   │   └── tailgating/
+│   │       └── highway_tailgating.R
+│   └── rural/
+│       ├── being_tailgated/
+│       │   └── rural_being_tailgated.R
+│       └── tailgating/
+│           └── rural_tailgating.R
+├── data/raw/
+│   ├── highway/
+│   │   ├── being_tailgated/    # Highway being tailgated CSV files
+│   │   └── tailgating/         # Highway tailgating CSV files
+│   └── rural/
+│       ├── being_tailgated/    # Rural being tailgated CSV files
+│       └── tailgating/         # Rural tailgating CSV files
+├── output/                     # Summary CSV files
+├── docs/                       # Documentation for each scenario
+├── scripts/                    # Additional analysis scripts
+├── close-following.Rproj      # R project file
+├── .gitignore                 # Git ignore file
+└── README.md                  # Project overview
 ```
 
-## Next Steps
-This completes the analysis framework for all four driving scenarios:
-- Highway being tailgated ✓
-- Highway tailgating ✓
-- Rural being tailgated ✓
-- Rural tailgating ✓
-
-The framework now supports comprehensive analysis of close following behavior across different road types (highway vs rural) and following roles (tailgating vs being tailgated).
-
-Contact Alan Sims - alan.sims@griffithuni.edu.au for questions or to contribute.
+Contact [Alan Sims](mailto:alan.sims@griffithuni.edu.au) for questions or to contribute additional analysis functions.
