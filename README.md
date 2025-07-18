@@ -5,10 +5,10 @@ Analysis of close following behavior across four scenarios comparing highway vs 
 
 ## Scenarios
 
-- [Highway Being Tailgated](docs/highway_being_tailgated.md)
-- [Highway Tailgating](docs/highway_tailgating.md) 
-- [Rural Being Tailgated](docs/rural_being_tailgated.md)
-- [Rural Tailgating](docs/rural_tailgating.md)
+- [Highway - Being Tailgated](docs/highway_being_tailgated.md)
+- [Highway - Tailgating](docs/highway_tailgating.md) 
+- [Rural - Being Tailgated](docs/rural_being_tailgated.md)
+- [Rural - Tailgating](docs/rural_tailgating.md)
 
 ## Research Questions
 
