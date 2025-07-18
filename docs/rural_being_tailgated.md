@@ -1,4 +1,4 @@
-# Close Following Rural Being Tailgated
+# Close Following - Rural - Being Tailgated
 
 ## Scenario Overview
 
