@@ -154,33 +154,26 @@ analyze_rural_tailgating <- function(file_path) {
 
 # Extract participant information from filename
 extract_participant_info <- function(filename) {
-  # Current format: Close_Following_Rural_Tailgaiting25_06_202515h23m26s.csv
-  # Expected format: Close_Following_Rural_Tailgaiting-DD_MM_YYYY-HHhMMmSSs_PPPP.csv
+  # Actual format: Close_Following_Rural_Tailgaiting-25_06_2025-15h23m26s_1234.csv
+  # Pattern: Name-DD_MM_YYYY-HHhMMmSSs_PPPP.csv
   
   base_name <- tools::file_path_sans_ext(basename(filename))
   
-  # Try to extract date and time (current format without underscores in date)
-  if(grepl("(\\d{2})(\\d{2})(\\d{4})(\\d{2})h(\\d{2})m(\\d{2})s", base_name)) {
-    matches <- regmatches(base_name, regexec("(\\d{2})(\\d{2})(\\d{4})(\\d{2})h(\\d{2})m(\\d{2})s", base_name))[[1]]
+  # Try to extract date, time, and participant ID
+  if(grepl("-(\\d{2})_(\\d{2})_(\\d{4})-(\\d{2})h(\\d{2})m(\\d{2})s_(\\d+)", base_name)) {
+    matches <- regmatches(base_name, regexec("-(\\d{2})_(\\d{2})_(\\d{4})-(\\d{2})h(\\d{2})m(\\d{2})s_(\\d+)", base_name))[[1]]
     
-    if(length(matches) >= 7) {
+    if(length(matches) >= 8) {
       day <- matches[2]
       month <- matches[3] 
       year <- matches[4]
       hour <- matches[5]
       minute <- matches[6]
       second <- matches[7]
+      participant_id <- matches[8]
       
       date_str <- paste(day, month, year, sep="/")
       time_str <- paste(hour, minute, second, sep=":")
-      
-      # Try to extract participant ID (if exists after the datetime)
-      remaining <- sub(".*\\d{2}h\\d{2}m\\d{2}s", "", base_name)
-      participant_id <- if(nchar(remaining) > 0) {
-        gsub("^_", "", remaining)
-      } else {
-        paste0("RURAL_TG_", paste(day, month, year, hour, minute, second, sep=""))
-      }
       
       return(list(
         participant_id = participant_id,
