@@ -1,5 +1,5 @@
 ![main_logo](images/main_logo.jpg)
-![Repo Visitors](https://profile-counter.glitch.me/alan-sims-close-following/count.svg)
+![Visitor Badge](https://visitor-badge.glitch.me/badge?page_id=alan-sims.close-following&left_color=grey&right_color=blue)
 # Close Following Behavior Analysis
 
 Analysis of close following behavior across four scenarios comparing highway vs rural environments and being tailgated vs tailgating roles.
