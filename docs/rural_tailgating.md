@@ -1,4 +1,4 @@
-# Close Following Rural Tailgating
+# Close Following - Rural - Tailgating
 
 ## Scenario Overview
 
