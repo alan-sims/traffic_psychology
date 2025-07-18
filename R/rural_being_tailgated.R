@@ -4,10 +4,7 @@
 library(tidyverse)
 library(readr)
 
-#' Read and parse rural being tailgated data from tab-separated CSV
-#' 
-#' @param file_path Path to the CSV file
-#' @return Tibble with cleaned and parsed data
+# Read and parse rural being tailgated data from tab-separated CSV
 read_rural_tailgated_data <- function(file_path) {
   
   # Read the tab-separated file
@@ -27,8 +24,6 @@ read_rural_tailgated_data <- function(file_path) {
       drive_section = `[17 (Driver/Drive Section)].ExportChannel-val`,
       road_abscissa = `[00].VehicleUpdate-roadInfo-roadAbscissa.0`,
       lane_id = `[00].VehicleUpdate-roadInfo-laneId.0`
-      # Note: Headway distance and time headway columns not present in this scenario
-      # as participant is being tailgated, not tailgating
     ) %>%
     # Convert "null" strings to NA and then to numeric
     mutate(
@@ -47,10 +42,7 @@ read_rural_tailgated_data <- function(file_path) {
   return(clean_data)
 }
 
-#' Calculate summary metrics for rural being tailgated data by drive section
-#' 
-#' @param data Cleaned data from read_rural_tailgated_data()
-#' @return Tibble with summary metrics by section
+# Calculate summary metrics for rural being tailgated data by drive section
 calculate_summary_metrics <- function(data) {
   
   # Filter to valid drive sections (0-4)
@@ -104,10 +96,7 @@ calculate_summary_metrics <- function(data) {
   return(section_metrics)
 }
 
-#' Analyze a single rural being tailgated file
-#' 
-#' @param file_path Path to the CSV file
-#' @return List containing raw data and summary metrics
+# Analyze a single rural being tailgated file
 analyze_rural_tailgated <- function(file_path) {
   
   cat("Analyzing rural being tailgated file:", basename(file_path), "\n")
@@ -149,10 +138,7 @@ analyze_rural_tailgated <- function(file_path) {
   ))
 }
 
-#' Extract participant information from filename
-#' 
-#' @param filename The filename to parse
-#' @return List with participant info
+# Extract participant information from filename
 extract_participant_info <- function(filename) {
   # Expected format: Close_Following_Rural_Being_Tailgaited-DD_MM_YYYY-HHhMMmSSs_PPPP.csv
   # Current format: Close_Following_Rural_Being_Tailgaited02_07_202513h56m57s.csv
@@ -200,11 +186,7 @@ extract_participant_info <- function(filename) {
   ))
 }
 
-#' Process multiple rural being tailgated files and create summary CSV
-#' 
-#' @param data_dir Directory containing the CSV files
-#' @param output_file Path for the output summary CSV
-#' @return Tibble with combined summary data
+# Process multiple rural being tailgated files and create summary CSV
 process_rural_tailgated_batch <- function(data_dir, output_file = "rural_being_tailgated_summary.csv") {
   
   # Find all rural being tailgated CSV files
