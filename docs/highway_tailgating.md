@@ -16,7 +16,7 @@ These hazards are (in order that they appear in the scenario):
 4. **Speed detection** - A white van similar to those used as police radar speed detection vehicles
 
 > [!NOTE]
-> Would be good to add pictures to these
+> Would be good to add pictures of these
 
 ## Traffic Behavior
 
@@ -242,20 +242,32 @@ Your CSV files should contain tab-separated data with these columns:
 ## Project Structure
 ```
 close_following/
-├── R/highway/tailgating/
-│   └── highway_tailgating.R          # Analysis functions
-├── data/raw/highway/tailgating/      # Place your CSV files here
-├── output/                           # Summary files created here
-├── docs/                            # Documentation
-├── close-following.Rproj            # R project file
-└── README.md                        # Project overview
+├── R/
+│   ├── highway/
+│   │   ├── being_tailgated/
+│   │   │   └── highway_being_tailgated.R
+│   │   └── tailgating/
+│   │       └── highway_tailgating.R
+│   └── rural/
+│       ├── being_tailgated/
+│       │   └── rural_being_tailgated.R
+│       └── tailgating/
+│           └── rural_tailgating.R
+├── data/raw/
+│   ├── highway/
+│   │   ├── being_tailgated/    # Highway being tailgated CSV files
+│   │   └── tailgating/         # Highway tailgating CSV files
+│   └── rural/
+│       ├── being_tailgated/    # Rural being tailgated CSV files
+│       └── tailgating/         # Rural tailgating CSV files
+├── output/                     # Summary CSV files
+├── docs/                       # Documentation for each scenario
+├── scripts/                    # Additional analysis scripts
+├── close-following.Rproj      # R project file
+├── .gitignore                 # Git ignore file
+└── README.md                  # Project overview
 ```
 
-## Next Steps
-This framework can be extended to analyze the other driving scenarios:
-- Highway being tailgated ✓
-- Highway tailgating ✓
-- Rural being tailgated (coming soon)
-- Rural tailgating (coming soon)
 
-Contact Alan Sims - alan.sims@griffithuni.edu.au for questions or to contribute.
+
+Contact [Alan Sims](mailto:alan.sims@griffithuni.edu.au) for questions or to contribute.
