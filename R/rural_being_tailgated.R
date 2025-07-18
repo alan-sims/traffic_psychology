@@ -187,7 +187,7 @@ extract_participant_info <- function(filename) {
 }
 
 # Process multiple rural being tailgated files and create summary CSV
-process_rural_tailgated_batch <- function(data_dir, output_file = "rural_being_tailgated_summary.csv") {
+process_rural_tailgated_batch <- function(data_dir, output_file = "output/rural_being_tailgated_summary.csv") {
   
   # Find all rural being tailgated CSV files
   csv_files <- list.files(data_dir, 
@@ -229,10 +229,6 @@ process_rural_tailgated_batch <- function(data_dir, output_file = "rural_being_t
   })
   
   if(nrow(all_summaries) > 0) {
-    # Save the long format (section-by-section) data
-    long_output_file <- gsub("\\.csv$", "_long.csv", output_file)
-    write_csv(all_summaries, long_output_file)
-    
     # Reshape to wide format for easier analysis
     wide_summary <- all_summaries %>%
       select(participant_id, date, time, filename, drive_section, 
@@ -243,12 +239,10 @@ process_rural_tailgated_batch <- function(data_dir, output_file = "rural_being_t
         names_glue = "{.value}_section_{drive_section}"
       )
     
-    # Write wide format to CSV
+    # Write to CSV
     write_csv(wide_summary, output_file)
-    
     cat("\n✅ Batch processing complete!")
-    cat("\n📁 Long format saved to:", long_output_file)
-    cat("\n📁 Wide format saved to:", output_file)
+    cat("\n📁 Summary saved to:", output_file)
     cat("\n📊 Processed", length(unique(all_summaries$participant_id)), "participants")
     cat("\n📈 Total", nrow(all_summaries), "section summaries\n")
     
