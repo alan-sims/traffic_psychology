@@ -1,4 +1,4 @@
-![main_logo](images/main_logo.png)
+![main_logo](images/main_logo.jpg)
 # Close Following Behavior Analysis
 
 Analysis of close following behavior across four scenarios comparing highway vs rural environments and being tailgated vs tailgating roles.

@@ -229,3 +229,5 @@ process_highway_tailgated_batch <- function(data_folder, output_file = "output/h
 # Batch processing:
 # summary_data <- process_highway_tailgated_batch("data/raw/highway/being_tailgated/")
 # This will create: output/highway_tailgated_summary.csv
+
+
