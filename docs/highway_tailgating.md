@@ -1,4 +1,4 @@
-# Close Following Highway Tailgating
+# Close Following - Highway - Tailgating
 
 ## Scenario Overview
 
