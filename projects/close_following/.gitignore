@@ -1,0 +1,8 @@
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj.user/
+data/raw/**/*.csv
+!data/raw/**/README.md
+output/
+.DS_Store
