@@ -9,9 +9,7 @@ This repository serves as the central code backup and collaboration hub for all 
 ### Active Research
 - **[Close Following Behavior Analysis](projects/close_following/)** - Comprehensive analysis of tailgating behavior across highway vs rural environments and different following roles
 
-### Project Status
-- ✅ Close Following: Complete analysis framework with 4 scenarios
-- 🔄 Future projects will be added as they develop
+- **[Multi-tasking While Driving](projects/multitasking/)** - 
 
 ## 📁 Repository Structure
 
@@ -55,20 +53,6 @@ traffic_psychology/
 3. Include comprehensive documentation
 4. Add your project to this README
 
-## 🔬 Research Focus Areas
-
-- **Driver Behavior Analysis** - Understanding how drivers respond to various traffic conditions
-- **Close Following Dynamics** - Tailgating behavior across different road environments
-- **Traffic Safety** - Identifying risk factors and safety interventions
-- **Driving Simulation** - Controlled studies of driver responses
-
-## 📊 Data Standards
-
-- **Sampling Rate:** 0.05-second intervals (20 Hz) for driving simulation data
-- **File Formats:** Tab-separated CSV with standardized column naming
-- **Documentation:** Each dataset requires comprehensive metadata
-- **Privacy:** Raw participant data excluded from repository
-
 ## 🤝 Contributing
 
 ### Code Standards
@@ -100,7 +84,7 @@ This repository enables:
 
 ## 📞 Contact
 
-**Lab Lead:** Alan Sims - [alan.sims@griffithuni.edu.au](mailto:alan.sims@griffithuni.edu.au)
+Alan Sims - [alan.sims@griffithuni.edu.au](mailto:alan.sims@griffithuni.edu.au)
 
 **Repository:** https://github.com/alan-sims/traffic_psychology
 

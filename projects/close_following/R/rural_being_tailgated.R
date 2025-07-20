@@ -180,7 +180,7 @@ extract_participant_info <- function(filename) {
 }
 
 # Process multiple rural being tailgated files and create summary CSV
-process_rural_tailgated_batch <- function(data_dir, output_file = "output/rural_being_tailgated_summary.csv") {
+process_rural_tailgated_batch <- function(data_dir, output_file = "projects/close_following/output/rural_being_tailgated_summary.csv") {
   
   # Find all rural being tailgated CSV files
   csv_files <- list.files(data_dir, 
@@ -249,10 +249,11 @@ process_rural_tailgated_batch <- function(data_dir, output_file = "output/rural_
 # Example usage:
 # 
 # # Single file analysis
-# result <- analyze_rural_tailgated("data/raw/rural/being_tailgated/Close_Following_Rural_Being_Tailgaited02_07_202513h56m57s.csv")
+# result <- analyze_rural_tailgated("projects/close_following/data/raw/rural/being_tailgated/Close_Following_Rural_Being_Tailgaited02_07_202513h56m57s.csv")
 # 
 # # Batch processing
-# summary_data <- process_rural_tailgated_batch("data/raw/rural/being_tailgated/")
+# summary_data <- process_rural_tailgated_batch("projects/close_following/data/raw/rural/being_tailgated/")
 # 
+#
 # # View results
 # View(summary_data)

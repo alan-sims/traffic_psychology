@@ -148,7 +148,7 @@ extract_participant_info <- function(filename) {
 }
 
 # Function to process multiple files and create summary CSV
-process_highway_tailgated_batch <- function(data_folder, output_file = "output/highway_tailgated_summary.csv") {
+process_highway_tailgated_batch <- function(data_folder, output_file = "projects/close_following/output/highway_being_tailgated_summary.csv") {
   
   # Create output directory if it doesn't exist
   dir.create(dirname(output_file), showWarnings = FALSE, recursive = TRUE)

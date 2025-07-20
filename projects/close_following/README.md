@@ -8,12 +8,10 @@ This project examines how drivers respond to close following situations across d
 
 ## 🛣️ Scenarios Analyzed
 
-| Scenario | Environment | Role | Key Features |
-|----------|-------------|------|-------------|
-| [Highway - Being Tailgated](docs/highway_being_tailgated.md) | Highway (100km/h) | Passive | Truck follows at 2s → 0.5s after section 6 |
-| [Highway - Tailgating](docs/highway_tailgating.md) | Highway (100km/h) | Active | Following slow cars (90km/h) in left lane |
-| [Rural - Being Tailgated](docs/rural_being_tailgated.md) | Rural (100/60km/h) | Passive | BMW follows at 2.5s → 0.5s, no overtaking |
-| [Rural - Tailgating](docs/rural_tailgating.md) | Rural (100/60km/h) | Active | Following slow cars, no overtaking allowed |
+[Highway - Being Tailgated](docs/highway_being_tailgated.md)
+[Highway - Tailgating](docs/highway_tailgating.md)
+[Rural - Being Tailgated](docs/rural_being_tailgated.md)
+[Rural - Tailgating](docs/rural_tailgating.md)
 
 ## 🔬 Research Questions
 
@@ -74,33 +72,6 @@ close_following/
 └── README.md                    # This file
 ```
 
-## 📈 Key Metrics
-
-### Universal Metrics (All Scenarios)
-- **Speed**: Average, SD, min, max by section
-- **SDLP**: Standard Deviation of Lateral Position
-- **Braking**: Event counts and pressure
-- **Safety**: Crash detection heuristics
-
-### Tailgating-Specific Metrics
-- **Headway Distance**: Following distance in meters
-- **Time Headway**: Following time in seconds
-- **Close Following Events**: Count of headway < 2s
-- **Very Close Following**: Count of headway < 1s
-
-## 🎯 Expected Outcomes
-
-### Behavioral Patterns
-- Increased lateral movement when being tailgated
-- Closer following in rural vs highway scenarios
-- Speed adjustments during aggressive tailgating
-- Individual differences in tailgating tolerance
-
-### Safety Implications
-- Critical headway thresholds for crash risk
-- Environmental factors affecting following behavior
-- Intervention points for safety systems
-
 ## 📄 Documentation
 
 Each scenario has detailed documentation:
@@ -108,16 +79,6 @@ Each scenario has detailed documentation:
 - Data requirements and naming conventions
 - Analysis examples and interpretation
 - Troubleshooting common issues
-
-## ✅ Current Status
-
-**Complete**: All four scenarios implemented and tested
-- ✅ Highway being tailgated analysis
-- ✅ Highway tailgating analysis  
-- ✅ Rural being tailgated analysis
-- ✅ Rural tailgating analysis
-- ✅ Batch processing capabilities
-- ✅ Comprehensive documentation
 
 ## 🤝 Contributing
 
