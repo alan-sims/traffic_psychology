@@ -75,23 +75,23 @@ If you have Git installed:
 2. Navigate to where you want to save the project
 3. Run these commands:
 ```bash
-git clone https://github.com/alan-sims/close_following.git
+git clone https://github.com/alan-sims/traffic_psychology.git
 cd close_following
 ```
 
 #### Option B: Download ZIP (Alternative)
 If you don't have Git:
-1. Go to the GitHub repository page: [your-github-repo-url]
+1. Go to the GitHub repository page: github.com/alan-sims/traffic_psychology/
 2. Click the green "Code" button
 3. Select "Download ZIP"
 4. Extract the ZIP file to your desired location
-5. Rename the folder to `close_following` if needed
+5. Rename the folder to `traffic_psychology` if needed
 
 #### Opening the Project
 1. Open RStudio or Positron IDE
 2. Go to File → Open Project (or File → Open Project in New Session)
-3. Navigate to the `close_following` folder
-4. Click on `close-following.Rproj` and select "Open"
+3. Navigate to the `traffic_psychology` folder
+4. Click on `traffic_psychology.Rproj` and select "Open"
 
 #### Install Required Packages
 Once the project is open, run this in the R console:
