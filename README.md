@@ -83,11 +83,12 @@ This repository enables:
 - **Quality Assurance** - Peer review of analysis methods
 
 ## 📞 Contact
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6af51e013a259f61ee431e499745f6a805292727
 Alan Sims - [alan.sims@griffithuni.edu.au](mailto:alan.sims@griffithuni.edu.au)
 
 **Repository:** https://github.com/alan-sims/traffic_psychology
 
 ---
-
-*This repository represents the collective research efforts of our traffic psychology lab. All code is developed following open science principles and reproducible research practices.*
