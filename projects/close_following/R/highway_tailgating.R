@@ -1,4 +1,4 @@
-# Updated Highway Tailgating Analysis Functions with Fixed Crash Detection
+# Updated Highway Tailgating Analysis Functions
 library(tidyverse)
 library(readr)
 
@@ -46,16 +46,80 @@ calculate_highway_tailgating_metrics <- function(data) {
     filter(drive_section >= 1 & drive_section <= 10) %>%
     group_by(drive_section) %>%
     summarise(
+      # Basic metrics
+      n_observations = n(),
+      duration_seconds = max(time, na.rm = TRUE) - min(time, na.rm = TRUE),
+      
+      # Speed metrics
       avg_speed = mean(speed, na.rm = TRUE),
+      sd_speed = sd(speed, na.rm = TRUE),
+      min_speed = min(speed, na.rm = TRUE),
+      max_speed = max(speed, na.rm = TRUE),
+      
+      # Lateral position metrics (SDLP - Standard Deviation of Lateral Position)
       sdlp = sd(lateral_shift, na.rm = TRUE),
-      avg_headway_distance = mean(headway_distance, na.rm = TRUE),
-      avg_time_headway = mean(time_headway, na.rm = TRUE),
-      min_headway_distance = min(headway_distance, na.rm = TRUE),
-      min_time_headway = min(time_headway, na.rm = TRUE),
-      max_braking = max(braking, na.rm = TRUE),
-      avg_braking = mean(braking, na.rm = TRUE),
-      total_brake_events = sum(braking > 0, na.rm = TRUE),
-      section_duration = max(time, na.rm = TRUE) - min(time, na.rm = TRUE),
+      
+      # Braking metrics - corrected to count actual braking episodes
+      total_braking_events = {
+        # Create binary brake indicator
+        brake_binary <- ifelse(braking > 0, 1, 0)
+        brake_binary[is.na(brake_binary)] <- 0
+        
+        # Count transitions from 0 to 1 (start of braking episodes)
+        if(length(brake_binary) > 1) {
+          sum(diff(brake_binary) == 1, na.rm = TRUE)
+        } else {
+          ifelse(brake_binary[1] == 1, 1, 0)
+        }
+      },
+      avg_braking_pressure_per_event = {
+        # Create binary brake indicator
+        brake_binary <- ifelse(braking > 0, 1, 0)
+        brake_binary[is.na(brake_binary)] <- 0
+        
+        if(sum(brake_binary) > 0) {
+          # Get average pressure only during braking periods
+          mean(braking[brake_binary == 1], na.rm = TRUE)
+        } else {
+          NA_real_
+        }
+      },
+      max_braking_pressure = max(braking, na.rm = TRUE),
+      
+      # Headway metrics (tailgating behavior) - filter out unrealistic values
+      avg_headway_distance = {
+        valid_headway <- headway_distance[!is.na(headway_distance) & headway_distance <= 1000]
+        if(length(valid_headway) > 0) {
+          mean(valid_headway)
+        } else {
+          NA_real_
+        }
+      },
+      min_headway_distance = {
+        valid_headway <- headway_distance[!is.na(headway_distance) & headway_distance <= 1000]
+        if(length(valid_headway) > 0) {
+          min(valid_headway)
+        } else {
+          NA_real_
+        }
+      },
+      avg_time_headway = {
+        valid_time_headway <- time_headway[!is.na(time_headway) & time_headway <= 100]
+        if(length(valid_time_headway) > 0) {
+          mean(valid_time_headway)
+        } else {
+          NA_real_
+        }
+      },
+      min_time_headway = {
+        valid_time_headway <- time_headway[!is.na(time_headway) & time_headway <= 100]
+        if(length(valid_time_headway) > 0) {
+          min(valid_time_headway)
+        } else {
+          NA_real_
+        }
+      },
+      
       .groups = 'drop'
     ) %>%
     # Handle infinite values from empty sections
@@ -63,38 +127,7 @@ calculate_highway_tailgating_metrics <- function(data) {
       across(where(is.numeric), ~ifelse(is.infinite(.), NA, .))
     )
   
-  # Fixed crash detection with proper NA handling
-  valid_data <- data_clean %>% 
-    filter(!is.na(headway_distance) | !is.na(braking))
-  
-  if (nrow(valid_data) > 0) {
-    # Check for crash conditions
-    crash_data <- valid_data %>%
-      filter((!is.na(headway_distance) & headway_distance < 5) | 
-             (!is.na(braking) & braking > 0.8))
-    
-    # Calculate overall safety metrics
-    overall_metrics <- list(
-      crash_detected = nrow(crash_data) > 0,
-      min_headway_overall = if(any(!is.na(valid_data$headway_distance))) {
-        min(valid_data$headway_distance, na.rm = TRUE)
-      } else { NA },
-      max_braking_overall = if(any(!is.na(valid_data$braking))) {
-        max(valid_data$braking, na.rm = TRUE)
-      } else { NA }
-    )
-  } else {
-    overall_metrics <- list(
-      crash_detected = FALSE,
-      min_headway_overall = NA,
-      max_braking_overall = NA
-    )
-  }
-  
-  return(list(
-    section_metrics = section_metrics,
-    crash_events = overall_metrics
-  ))
+  return(section_metrics)
 }
 
 # Analyze single highway tailgating file
@@ -106,33 +139,30 @@ analyze_highway_tailgating <- function(filepath) {
   metrics <- calculate_highway_tailgating_metrics(data)
   
   # Print summary
-  cat("\n=== HIGHWAY TAILGATING ANALYSIS SUMMARY ===\n")
+  cat("\n=== HIGHWAY TAILGATING ANALYSIS ===\n")
   cat("File:", basename(filepath), "\n")
   cat("Total observations:", nrow(data), "\n")
   cat("Duration:", round(max(data$time, na.rm = TRUE), 2), "seconds\n")
+  cat("Sections found:", paste(sort(unique(data$drive_section[!is.na(data$drive_section)])), collapse = ", "), "\n\n")
   
-  # Section-wise metrics
-  cat("\n--- Drive Section Metrics ---\n")
-  print(metrics$section_metrics)
-  
-  # Crash detection with improved output
-  cat("\n--- Safety Metrics ---\n")
-  if (metrics$crash_events$crash_detected) {
-    cat("⚠️  Potential crash event detected!\n")
-  } else {
-    cat("✓ No crash events detected\n")
-  }
-  
-  if (!is.na(metrics$crash_events$min_headway_overall)) {
-    cat("Minimum headway distance:", round(metrics$crash_events$min_headway_overall, 2), "meters\n")
-  } else {
-    cat("Minimum headway distance: No valid data\n")
-  }
-  
-  if (!is.na(metrics$crash_events$max_braking_overall)) {
-    cat("Maximum braking pressure:", round(metrics$crash_events$max_braking_overall, 2), "\n")
-  } else {
-    cat("Maximum braking pressure: No valid data\n")
+  # Print section summaries
+  cat("=== SECTION SUMMARIES ===\n")
+  for(i in 1:10) {
+    section_data <- metrics %>% filter(drive_section == i)
+    if(nrow(section_data) > 0) {
+      cat(sprintf("Section %d:\n", i))
+      cat(sprintf("  Duration: %.1f seconds\n", section_data$duration_seconds))
+      cat(sprintf("  Average Speed: %.1f km/h (SD: %.1f)\n", 
+                  section_data$avg_speed, section_data$sd_speed))
+      cat(sprintf("  SDLP: %.4f\n", section_data$sdlp))
+      cat(sprintf("  Braking Events: %d\n", section_data$total_braking_events))
+      cat(sprintf("  Average Brake Pressure per Event: %.4f\n", section_data$avg_braking_pressure_per_event))
+      cat(sprintf("  Average Headway Distance: %.1f m\n", section_data$avg_headway_distance))
+      cat(sprintf("  Minimum Headway Distance: %.1f m\n", section_data$min_headway_distance))
+      cat(sprintf("  Average Time Headway: %.2f s\n", section_data$avg_time_headway))
+      cat(sprintf("  Minimum Time Headway: %.2f s\n", section_data$min_time_headway))
+      cat("\n")
+    }
   }
   
   return(metrics)
@@ -144,30 +174,42 @@ extract_participant_info <- function(filename) {
   # Expected format: Close_Following_Highway_Tailgaiting-DD_MM_YYYY-HHhMMmSSs_PPPP.csv
   base_name <- tools::file_path_sans_ext(basename(filename))
   
-  # Split by underscores and hyphens
-  parts <- strsplit(base_name, "[-_]")[[1]]
-  
-  if (length(parts) >= 4) {
-    participant_id <- parts[length(parts)]  # Last part should be participant ID
-    date_part <- parts[length(parts) - 2]   # Date part
-    time_part <- parts[length(parts) - 1]   # Time part
+  # Try to extract date, time, and participant ID
+  if(grepl("-(\\d{2})_(\\d{2})_(\\d{4})-(\\d{2})h(\\d{2})m(\\d{2})s_(\\d+)", base_name)) {
+    matches <- regmatches(base_name, regexec("-(\\d{2})_(\\d{2})_(\\d{4})-(\\d{2})h(\\d{2})m(\\d{2})s_(\\d+)", base_name))[[1]]
     
-    return(list(
-      participant_id = participant_id,
-      date = date_part,
-      time = time_part
-    ))
-  } else {
-    return(list(
-      participant_id = "unknown",
-      date = "unknown",
-      time = "unknown"
-    ))
+    if(length(matches) >= 8) {
+      day <- matches[2]
+      month <- matches[3] 
+      year <- matches[4]
+      hour <- matches[5]
+      minute <- matches[6]
+      second <- matches[7]
+      participant_id <- matches[8]
+      
+      date_str <- paste(day, month, year, sep="/")
+      time_str <- paste(hour, minute, second, sep=":")
+      
+      return(list(
+        participant_id = participant_id,
+        date = date_str,
+        time = time_str,
+        filename = basename(filename)
+      ))
+    }
   }
+  
+  # Fallback if parsing fails
+  return(list(
+    participant_id = paste0("HWY_TG_", gsub("[^0-9]", "", base_name)),
+    date = "Unknown",
+    time = "Unknown", 
+    filename = basename(filename)
+  ))
 }
 
 # Process multiple highway tailgating files
-process_highway_tailgating_batch <- function(data_dir, output_file = "highway_tailgating_summary.csv") {
+process_highway_tailgating_batch <- function(data_dir, output_file = "projects/close_following/output/highway_tailgating_summary.csv") {
   # Find all highway tailgating CSV files
   csv_files <- list.files(data_dir, pattern = "*.csv", full.names = TRUE)
   
@@ -178,7 +220,7 @@ process_highway_tailgating_batch <- function(data_dir, output_file = "highway_ta
   cat("Found", length(csv_files), "files to process\n")
   
   # Process each file
-  all_results <- map_dfr(csv_files, function(filepath) {
+  all_summaries <- map_dfr(csv_files, function(filepath) {
     cat("Processing:", basename(filepath), "\n")
     
     tryCatch({
@@ -186,48 +228,17 @@ process_highway_tailgating_batch <- function(data_dir, output_file = "highway_ta
       participant_info <- extract_participant_info(filepath)
       
       # Analyze data
-      data <- read_highway_tailgating_data(filepath)
-      metrics <- calculate_highway_tailgating_metrics(data)
+      summary_data <- analyze_highway_tailgating(filepath)
       
-      # Create summary row
-      result <- tibble(
-        participant_id = participant_info$participant_id,
-        date = participant_info$date,
-        time = participant_info$time,
-        filename = basename(filepath),
-        total_observations = nrow(data),
-        duration_seconds = max(data$time, na.rm = TRUE),
-        crash_detected = metrics$crash_events$crash_detected,
-        min_headway_overall = metrics$crash_events$min_headway_overall,
-        max_braking_overall = metrics$crash_events$max_braking_overall
-      )
-      
-      # Add section-wise metrics
-      for (section in 1:10) {
-        section_data <- metrics$section_metrics %>% filter(drive_section == section)
-        
-        if (nrow(section_data) > 0) {
-          result[[paste0("section_", section, "_avg_speed")]] <- section_data$avg_speed
-          result[[paste0("section_", section, "_sdlp")]] <- section_data$sdlp
-          result[[paste0("section_", section, "_avg_headway_distance")]] <- section_data$avg_headway_distance
-          result[[paste0("section_", section, "_avg_time_headway")]] <- section_data$avg_time_headway
-          result[[paste0("section_", section, "_min_headway_distance")]] <- section_data$min_headway_distance
-          result[[paste0("section_", section, "_min_time_headway")]] <- section_data$min_time_headway
-          result[[paste0("section_", section, "_max_braking")]] <- section_data$max_braking
-          result[[paste0("section_", section, "_total_brake_events")]] <- section_data$total_brake_events
-        } else {
-          result[[paste0("section_", section, "_avg_speed")]] <- NA
-          result[[paste0("section_", section, "_sdlp")]] <- NA
-          result[[paste0("section_", section, "_avg_headway_distance")]] <- NA
-          result[[paste0("section_", section, "_avg_time_headway")]] <- NA
-          result[[paste0("section_", section, "_min_headway_distance")]] <- NA
-          result[[paste0("section_", section, "_min_time_headway")]] <- NA
-          result[[paste0("section_", section, "_max_braking")]] <- NA
-          result[[paste0("section_", section, "_total_brake_events")]] <- NA
-        }
-      }
-      
-      return(result)
+      # Add participant information
+      summary_data %>%
+        mutate(
+          participant_id = participant_info$participant_id,
+          date = participant_info$date,
+          time = participant_info$time,
+          filename = participant_info$filename,
+          .before = 1
+        )
       
     }, error = function(e) {
       cat("Error processing", basename(filepath), ":", e$message, "\n")
@@ -235,10 +246,40 @@ process_highway_tailgating_batch <- function(data_dir, output_file = "highway_ta
     })
   })
   
-  # Write results to CSV
-  write_csv(all_results, output_file)
-  cat("\nBatch processing complete! Results saved to:", output_file, "\n")
-  cat("Processed", nrow(all_results), "files successfully\n")
-  
-  return(all_results)
+  if(nrow(all_summaries) > 0) {
+    # Reshape to wide format for easier analysis
+    wide_summary <- all_summaries %>%
+      select(participant_id, date, time, filename, drive_section, 
+             avg_speed, sdlp, total_braking_events, avg_braking_pressure_per_event,
+             avg_headway_distance, min_headway_distance, avg_time_headway, min_time_headway) %>%
+      pivot_wider(
+        names_from = drive_section,
+        values_from = c(avg_speed, sdlp, total_braking_events, avg_braking_pressure_per_event,
+                       avg_headway_distance, min_headway_distance, avg_time_headway, min_time_headway),
+        names_glue = "{.value}_section_{drive_section}"
+      )
+    
+    # Write to CSV
+    write_csv(wide_summary, output_file)
+    cat("\n✅ Batch processing complete!")
+    cat("\n📁 Summary saved to:", output_file)
+    cat("\n📊 Processed", length(unique(all_summaries$participant_id)), "participants")
+    cat("\n📈 Total", nrow(all_summaries), "section summaries\n")
+    
+    return(wide_summary)
+  } else {
+    cat("❌ No files processed successfully\n")
+    return(tibble())
+  }
 }
+
+# Example usage:
+# 
+# # Single file analysis
+# result <- analyze_highway_tailgating("projects/close_following/data/raw/highway/tailgating/Close_Following_Highway_Tailgaiting-25_06_2025-14h50m03s_1234.csv")
+# 
+# # Batch processing
+summary_data <- process_highway_tailgating_batch("projects/close_following/data/raw/highway/tailgating/")
+# 
+# # View results
+# View(summary_data)

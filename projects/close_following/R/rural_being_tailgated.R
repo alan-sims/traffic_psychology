@@ -67,17 +67,36 @@ calculate_summary_metrics <- function(data) {
       avg_lateral_shift = mean(lateral_shift, na.rm = TRUE),
       sdlp = sd(lateral_shift, na.rm = TRUE),
       
-      # Braking metrics
-      total_braking_events = sum(braking > 0, na.rm = TRUE),
-      avg_braking_pressure = mean(braking, na.rm = TRUE),
+      # Braking metrics - corrected to count actual braking episodes
+      total_braking_events = {
+        # Create binary brake indicator
+        brake_binary <- ifelse(braking > 0, 1, 0)
+        brake_binary[is.na(brake_binary)] <- 0
+        
+        # Count transitions from 0 to 1 (start of braking episodes)
+        if(length(brake_binary) > 1) {
+          sum(diff(brake_binary) == 1, na.rm = TRUE)
+        } else {
+          ifelse(brake_binary[1] == 1, 1, 0)
+        }
+      },
+      avg_braking_pressure_per_event = {
+        # Create binary brake indicator
+        brake_binary <- ifelse(braking > 0, 1, 0)
+        brake_binary[is.na(brake_binary)] <- 0
+        
+        if(sum(brake_binary) > 0) {
+          # Get average pressure only during braking periods
+          mean(braking[brake_binary == 1], na.rm = TRUE)
+        } else {
+          NA_real_
+        }
+      },
       max_braking_pressure = max(braking, na.rm = TRUE),
       
       # Lane metrics
       avg_lane_number = mean(lane_number, na.rm = TRUE),
       lane_changes = sum(abs(diff(lane_number, na.rm = TRUE)) > 0, na.rm = TRUE),
-      
-      # Basic crash detection (heuristic)
-      potential_crashes = sum(speed < 5 & braking > 0.5, na.rm = TRUE),
       
       .groups = 'drop'
     ) %>%
@@ -124,9 +143,6 @@ analyze_rural_tailgated <- function(file_path) {
       cat(sprintf("  SDLP: %.4f\n", section_data$sdlp))
       cat(sprintf("  Braking Events: %d\n", section_data$total_braking_events))
       cat(sprintf("  Lane Changes: %d\n", section_data$lane_changes))
-      if(section_data$potential_crashes > 0) {
-        cat(sprintf("  ⚠️  Potential crashes: %d\n", section_data$potential_crashes))
-      }
       cat("\n")
     }
   }
@@ -180,6 +196,7 @@ extract_participant_info <- function(filename) {
 }
 
 # Process multiple rural being tailgated files and create summary CSV
+# Process multiple rural being tailgated files and create summary CSV
 process_rural_tailgated_batch <- function(data_dir, output_file = "projects/close_following/output/rural_being_tailgated_summary.csv") {
   
   # Find all rural being tailgated CSV files
@@ -225,10 +242,10 @@ process_rural_tailgated_batch <- function(data_dir, output_file = "projects/clos
     # Reshape to wide format for easier analysis
     wide_summary <- all_summaries %>%
       select(participant_id, date, time, filename, drive_section, 
-             avg_speed, sdlp, total_braking_events, potential_crashes) %>%
+             avg_speed, sdlp, total_braking_events, avg_braking_pressure_per_event) %>%
       pivot_wider(
         names_from = drive_section,
-        values_from = c(avg_speed, sdlp, total_braking_events, potential_crashes),
+        values_from = c(avg_speed, sdlp, total_braking_events, avg_braking_pressure_per_event),
         names_glue = "{.value}_section_{drive_section}"
       )
     
@@ -252,7 +269,7 @@ process_rural_tailgated_batch <- function(data_dir, output_file = "projects/clos
 # result <- analyze_rural_tailgated("projects/close_following/data/raw/rural/being_tailgated/Close_Following_Rural_Being_Tailgaited02_07_202513h56m57s.csv")
 # 
 # # Batch processing
-# summary_data <- process_rural_tailgated_batch("projects/close_following/data/raw/rural/being_tailgated/")
+summary_data <- process_rural_tailgated_batch("projects/close_following/data/raw/rural/being_tailgated/")
 # 
 #
 # # View results

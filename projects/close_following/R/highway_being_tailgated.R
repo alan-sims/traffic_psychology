@@ -48,38 +48,60 @@ read_highway_tailgated_data <- function(file_path) {
 # Function to calculate summary metrics
 calculate_summary_metrics <- function(data) {
   
-  # Calculate average speed and lane position by drive section
+  # Calculate metrics by drive section
   section_summary <- data %>%
+    filter(drive_section >= 1 & drive_section <= 10) %>%
     group_by(drive_section) %>%
     summarise(
-      avg_speed = mean(driver_speed, na.rm = TRUE),
-      avg_lateral_position = mean(lane_lateral_shift, na.rm = TRUE),
+      # Basic metrics
       n_observations = n(),
-      .groups = "drop"
-    ) %>%
-    # Filter to only sections 1-10 as requested
-    filter(drive_section >= 1 & drive_section <= 10)
-  
-  # Check for crashes (assuming crash indicated by extreme braking or speed changes)
-  # This is a basic heuristic - you may need to adjust based on your crash criteria
-  crash_check <- data %>%
-    mutate(
-      extreme_braking = braking_pressure > 0.8,  # Adjust threshold as needed
-      speed_drop = driver_speed < 10  # Adjust threshold as needed
-    ) %>%
-    summarise(
-      crash_detected = any(extreme_braking & speed_drop, na.rm = TRUE),
-      crash_count = sum(extreme_braking & speed_drop, na.rm = TRUE)
+      duration_seconds = max(time, na.rm = TRUE) - min(time, na.rm = TRUE),
+      
+      # Speed metrics
+      avg_speed = mean(driver_speed, na.rm = TRUE),
+      sd_speed = sd(driver_speed, na.rm = TRUE),
+      min_speed = min(driver_speed, na.rm = TRUE),
+      max_speed = max(driver_speed, na.rm = TRUE),
+      
+      # Lateral position metrics (SDLP - Standard Deviation of Lateral Position)
+      avg_lateral_position = mean(lane_lateral_shift, na.rm = TRUE),
+      sdlp = sd(lane_lateral_shift, na.rm = TRUE),
+      
+      # Braking metrics - corrected to count actual braking episodes
+      total_braking_events = {
+        # Create binary brake indicator
+        brake_binary <- ifelse(braking_pressure > 0, 1, 0)
+        brake_binary[is.na(brake_binary)] <- 0
+        
+        # Count transitions from 0 to 1 (start of braking episodes)
+        if(length(brake_binary) > 1) {
+          sum(diff(brake_binary) == 1, na.rm = TRUE)
+        } else {
+          ifelse(brake_binary[1] == 1, 1, 0)
+        }
+      },
+      avg_braking_pressure_per_event = {
+        # Create binary brake indicator
+        brake_binary <- ifelse(braking_pressure > 0, 1, 0)
+        brake_binary[is.na(brake_binary)] <- 0
+        
+        if(sum(brake_binary) > 0) {
+          # Get average pressure only during braking periods
+          mean(braking_pressure[brake_binary == 1], na.rm = TRUE)
+        } else {
+          NA_real_
+        }
+      },
+      max_braking_pressure = max(braking_pressure, na.rm = TRUE),
+      
+      # Lane metrics
+      avg_lane_number = mean(lane_number, na.rm = TRUE),
+      lane_changes = sum(abs(diff(lane_number, na.rm = TRUE)) > 0, na.rm = TRUE),
+      
+      .groups = 'drop'
     )
   
-  # Combine results
-  results <- list(
-    section_summary = section_summary,
-    crash_info = crash_check,
-    total_sections = max(data$drive_section, na.rm = TRUE)
-  )
-  
-  return(results)
+  return(section_summary)
 }
 
 # Main analysis function
@@ -94,15 +116,26 @@ analyze_highway_tailgated <- function(file_path) {
   # Print results
   cat("\n=== HIGHWAY BEING TAILGATED ANALYSIS ===\n")
   cat("File:", basename(file_path), "\n")
-  cat("Total drive sections found:", results$total_sections, "\n")
-  cat("Crash detected:", results$crash_info$crash_detected, "\n")
-  cat("Crash events:", results$crash_info$crash_count, "\n\n")
+  cat("Total observations:", nrow(data), "\n")
+  cat("Duration:", round(max(data$time, na.rm = TRUE), 2), "seconds\n")
+  cat("Sections found:", paste(sort(unique(data$drive_section[!is.na(data$drive_section)])), collapse = ", "), "\n\n")
   
-  cat("AVERAGE SPEED BY DRIVE SECTION (km/h):\n")
-  print(results$section_summary %>% select(drive_section, avg_speed))
-  
-  cat("\nAVERAGE LATERAL POSITION BY DRIVE SECTION:\n")
-  print(results$section_summary %>% select(drive_section, avg_lateral_position))
+  # Print section summaries
+  cat("=== SECTION SUMMARIES ===\n")
+  for(i in 1:10) {
+    section_data <- results %>% filter(drive_section == i)
+    if(nrow(section_data) > 0) {
+      cat(sprintf("Section %d:\n", i))
+      cat(sprintf("  Duration: %.1f seconds\n", section_data$duration_seconds))
+      cat(sprintf("  Average Speed: %.1f km/h (SD: %.1f)\n", 
+                  section_data$avg_speed, section_data$sd_speed))
+      cat(sprintf("  SDLP: %.4f\n", section_data$sdlp))
+      cat(sprintf("  Braking Events: %d\n", section_data$total_braking_events))
+      cat(sprintf("  Average Brake Pressure per Event: %.4f\n", section_data$avg_braking_pressure_per_event))
+      cat(sprintf("  Lane Changes: %d\n", section_data$lane_changes))
+      cat("\n")
+    }
+  }
   
   return(results)
 }
@@ -129,7 +162,7 @@ extract_participant_info <- function(filename) {
     participant_id <- matches[8]
     
     # Format date and time
-    date <- paste(year, month, day, sep = "-")
+    date <- paste(day, month, year, sep = "/")
     time <- paste0(hour, ":", minute, ":", second)
     
     return(list(
@@ -162,11 +195,8 @@ process_highway_tailgated_batch <- function(data_folder, output_file = "projects
   
   cat("Found", length(csv_files), "CSV files to process\n")
   
-  # Initialize results dataframe
-  summary_results <- tibble()
-  
   # Process each file
-  for (file_path in csv_files) {
+  all_summaries <- map_dfr(csv_files, function(file_path) {
     cat("Processing:", basename(file_path), "\n")
     
     tryCatch({
@@ -174,51 +204,47 @@ process_highway_tailgated_batch <- function(data_folder, output_file = "projects
       participant_info <- extract_participant_info(file_path)
       
       # Analyze the data
-      data <- read_highway_tailgated_data(file_path)
-      results <- calculate_summary_metrics(data)
+      summary_data <- analyze_highway_tailgated(file_path)
       
-      # Create summary row
-      summary_row <- tibble(
-        participant_id = participant_info$participant_id,
-        date = participant_info$date,
-        time = participant_info$time,
-        crashed = results$crash_info$crash_detected,
-        crash_count = results$crash_info$crash_count
-      )
-      
-      # Add average speeds for each section (1-10)
-      speed_data <- results$section_summary %>%
-        select(drive_section, avg_speed) %>%
-        pivot_wider(names_from = drive_section, 
-                   values_from = avg_speed,
-                   names_prefix = "avg_speed_section_")
-      
-      # Add SDLP (Standard Deviation of Lateral Position) for each section
-      sdlp_data <- data %>%
-        filter(!is.na(drive_section), drive_section >= 1, drive_section <= 10) %>%
-        group_by(drive_section) %>%
-        summarise(sdlp = sd(lane_lateral_shift, na.rm = TRUE), .groups = "drop") %>%
-        pivot_wider(names_from = drive_section,
-                   values_from = sdlp,
-                   names_prefix = "sdlp_section_")
-      
-      # Combine all data
-      summary_row <- bind_cols(summary_row, speed_data, sdlp_data)
-      
-      # Add to results
-      summary_results <- bind_rows(summary_results, summary_row)
+      # Add participant information
+      summary_data %>%
+        mutate(
+          participant_id = participant_info$participant_id,
+          date = participant_info$date,
+          time = participant_info$time,
+          filename = basename(file_path),
+          .before = 1
+        )
       
     }, error = function(e) {
       cat("Error processing", basename(file_path), ":", e$message, "\n")
+      return(NULL)
     })
+  })
+  
+  if(nrow(all_summaries) > 0) {
+    # Reshape to wide format for easier analysis
+    wide_summary <- all_summaries %>%
+      select(participant_id, date, time, filename, drive_section, 
+             avg_speed, sdlp, total_braking_events, avg_braking_pressure_per_event) %>%
+      pivot_wider(
+        names_from = drive_section,
+        values_from = c(avg_speed, sdlp, total_braking_events, avg_braking_pressure_per_event),
+        names_glue = "{.value}_section_{drive_section}"
+      )
+    
+    # Write to CSV
+    write_csv(wide_summary, output_file)
+    cat("\n✅ Batch processing complete!")
+    cat("\n📁 Summary saved to:", output_file)
+    cat("\n📊 Processed", length(unique(all_summaries$participant_id)), "participants")
+    cat("\n📈 Total", nrow(all_summaries), "section summaries\n")
+    
+    return(wide_summary)
+  } else {
+    cat("❌ No files processed successfully\n")
+    return(tibble())
   }
-  
-  # Write to CSV
-  write_csv(summary_results, output_file)
-  cat("\nSummary saved to:", output_file, "\n")
-  cat("Processed", nrow(summary_results), "files successfully\n")
-  
-  return(summary_results)
 }
 
 # Example usage:
@@ -227,7 +253,4 @@ process_highway_tailgated_batch <- function(data_folder, output_file = "projects
 # results <- analyze_highway_tailgated(file_path)
 
 # Batch processing:
-# summary_data <- process_highway_tailgated_batch("projects/close_following/data/raw/highway/being_tailgated/")
-# This will create: output/highway_tailgated_summary.csv
-
-
+summary_data <- process_highway_tailgated_batch("projects/close_following/data/raw/highway/being_tailgated/")
