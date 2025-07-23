@@ -223,11 +223,11 @@ process_highway_tailgated_batch <- function(data_folder, output_file = "projects
 
 # Example usage:
 # Single file analysis:
-# file_path <- "data/raw/highway/being_tailgated/Close_Following_Highway_Being_Tailgaited-25_06_2025-15h07m17s_1234.csv"
+# file_path <- "projects/close_following/data/raw/highway/being_tailgated/Close_Following_Highway_Being_Tailgaited-25_06_2025-15h07m17s_1234.csv"
 # results <- analyze_highway_tailgated(file_path)
 
 # Batch processing:
-# summary_data <- process_highway_tailgated_batch("data/raw/highway/being_tailgated/")
+# summary_data <- process_highway_tailgated_batch("projects/close_following/data/raw/highway/being_tailgated/")
 # This will create: output/highway_tailgated_summary.csv
 
 
