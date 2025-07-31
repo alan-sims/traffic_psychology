@@ -14,6 +14,8 @@ Participants drive through a busy urban environment encountering motorcycles at 
 - **Speed and lateral stability** during urban driving
 - **Following behavior** when behind other vehicles
 
+📄 [View Scenario Diagram (PDF)](docs/scenario_diagram.pdf)
+
 ## 🛑 Intersection Types Analyzed
 
 ### Motorbike Give-Way Intersections

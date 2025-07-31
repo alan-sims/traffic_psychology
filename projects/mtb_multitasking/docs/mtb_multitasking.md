@@ -6,6 +6,8 @@ In this scenario, participants drive through a busy urban environment with multi
 
 Throughout the drive, participants face critical decisions at 8 different intersections, each presenting unique challenges for safe and legal driving behavior.
 
+📄 [View Scenario Diagram (PDF)](docs/scenario_diagram.pdf)
+
 ## Intersection Details
 
 ### Motorbike Give-Way Intersections
