@@ -5,3 +5,4 @@
 .DS_Store
 
 # Project-specific ignores are handled in each project folder
+.Rproj.user

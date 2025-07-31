@@ -360,10 +360,10 @@ process_mtb_multitasking_batch <- function(data_dir, output_file = "projects/mtb
 # Example usage:
 # 
 # # Single file analysis
-# result <- analyze_mtb_multitasking("projects/mtb_multitasking/data/raw/MBInt-29_07_202511h10m06s_4212.csv")
+# result <- analyze_mtb_multitasking("projects/mtb_multitasking/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 #         
 # # Batch processing
-# summary_data <- process_mtb_multitasking_batch("projects/mtb_multitasking/data/raw/")
+summary_data <- process_mtb_multitasking_batch("projects/mtb_multitasking/data/raw/")
 # 
 # # View results
 # View(summary_data)
