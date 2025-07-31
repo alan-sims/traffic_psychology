@@ -94,7 +94,6 @@ mtb_multitasking/
 ### Intersection Behavior
 - **Motorbike Give-Way**: Binary compliance at 6 intersections
 - **Traffic Light**: Compliance vs. running amber lights
-- **Compliance Rates**: Overall percentages for safety analysis
 
 ### Output Summary
 - **Individual Analysis**: Detailed console output per participant
