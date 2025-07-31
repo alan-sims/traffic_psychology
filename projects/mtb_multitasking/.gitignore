@@ -1,7 +1,7 @@
 .Rhistory
 .RData
 .Ruserdata
-*.Rproj.user/
+.Rproj.user/
 data/raw/**/*.csv
 !data/raw/**/README.md
 output/
