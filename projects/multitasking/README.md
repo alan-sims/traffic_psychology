@@ -165,12 +165,6 @@ multitask2_drives <- summary_data %>% filter(drive_type == "Office2_to_Office1_M
 - **Missing Data Management**: Appropriate handling of null values and edge cases
 - **Validation**: Automatic checks for expected data format and structure
 
-## 📄 Documentation
-
-- **[Detailed Usage Guide](docs/multitasking.md)**: Complete setup and analysis instructions
-- **[Function Reference](R/multitasking.R)**: Comprehensive code documentation
-- **Troubleshooting**: Common issues and solutions
-
 ## 🤝 Contributing
 
 This project follows lab coding standards:
