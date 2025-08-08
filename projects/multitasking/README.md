@@ -42,14 +42,15 @@ Each drive includes slower-moving lead vehicles to assess following behavior und
 ### Running Analysis
 
 ```r
-# Load the analysis functions (adjust file path as needed)
-source("[FILE PATH GOES HERE]R/multitasking.R")
+# Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from main traffic_psychology repository)
+source("projects/multitasking/R/multitasking.R") 
 
 # For single file analysis
-result <- analyze_multitask_driving("data/raw/Drive 2 - Drive to Office 2 (Multi-task 1)-28_07_2025-08h51m07s_1234.csv")
+result <- analyze_multitask_driving("projects/multitasking/data/raw/[SPECIFIC FILE NAME THAT YOU NEED TO LOOK AT].csv")
 
 # For batch processing
-summary_data <- process_multitask_driving_batch("data/raw/")
+summary_data  <- process_multitask_driving_batch("projects/multitasking/data/raw")
+# Unless you change the name above, it will overwrite the existing summary data file in the output folder
 ```
 
 ### Expected Data Format
@@ -70,7 +71,6 @@ multitasking/
 ├── data/raw/                     # Raw CSV files (excluded from git)
 ├── output/                       # Summary CSV files
 ├── docs/                         # Documentation
-│   ├── multitasking.md          # Detailed usage guide
 │   └── multitasking_map.png      # Route diagram
 ├── multitasking.Rproj           # R project file
 ├── .gitignore                   # Git ignore rules
