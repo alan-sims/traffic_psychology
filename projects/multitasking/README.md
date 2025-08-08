@@ -8,7 +8,7 @@ This project studies how multitasking affects driving performance by comparing b
 
 ## 🗺️ Driving Route
 
-![Multitasking Study Route](images/multitasking_map.png)
+![Multitasking Study Route](docs/multitasking_map.png)
 
 Participants complete three drives:
 1. **Drive 1**: Home → Office 1 (baseline driving, ~8 minutes)
@@ -72,10 +72,9 @@ multitasking/
 │   └── multitask_analysis.R      # Main analysis functions
 ├── data/raw/                     # Raw CSV files (excluded from git)
 ├── output/                       # Summary CSV files
-├── images/
-│   └── multitasking_map.png      # Route diagram
 ├── docs/                         # Documentation
-│   └── multitasking.md          # Detailed usage guide
+│   ├── multitasking.md          # Detailed usage guide
+│   └── multitasking_map.png      # Route diagram
 ├── multitasking.Rproj           # R project file
 ├── .gitignore                   # Git ignore rules
 └── README.md                    # This file
