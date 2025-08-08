@@ -6,3 +6,4 @@
 
 # Project-specific ignores are handled in each project folder
 .Rproj.user
+*.csv
