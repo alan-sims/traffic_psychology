@@ -1,4 +1,4 @@
-# MTB Multitasking - Detailed Documentation
+# MTB Intersections - Detailed Documentation
 
 ## Scenario Overview
 
@@ -74,7 +74,7 @@ If you have Git installed:
 3. Run these commands:
 ```bash
 git clone https://github.com/alan-sims/traffic_psychology.git
-cd traffic_psychology/projects/mtb_multitasking
+cd traffic_psychology/projects/mtb_intersections
 ```
 
 #### Option B: Download ZIP (Alternative)
@@ -83,13 +83,13 @@ If you don't have Git:
 2. Click the green "Code" button
 3. Select "Download ZIP"
 4. Extract the ZIP file to your desired location
-5. Navigate to `projects/mtb_multitasking/`
+5. Navigate to `projects/mtb_intersections/`
 
 #### Opening the Project
 1. Open RStudio or Positron IDE
 2. Go to File → Open Project (or File → Open Project in New Session)
-3. Navigate to the `mtb_multitasking` folder
-4. Click on `mtb_multitasking.Rproj` and select "Open"
+3. Navigate to the `mtb_intersections` folder
+4. Click on `mtb_intersections.Rproj` and select "Open"
 
 #### Install Required Packages
 Once the project is open, run this in the R console:
@@ -123,25 +123,25 @@ data/raw/
 
 #### For a Single File:
 ```r
-source("R/mtb_multitasking.R")
+source("R/mtb_intersections.R")
 
 file_path <- "data/raw/MBInt-29_07_2025-11h10m06s_4212.csv"
-results <- analyze_mtb_multitasking(file_path)
+results <- analyze_mtb_intersections(file_path)
 ```
 
 #### For Multiple Files (Batch Processing):
 ```r
-source("R/mtb_multitasking.R")
+source("R/mtb_intersections.R")
 
 # Process all files in the folder
-summary_data <- process_mtb_multitasking_batch("data/raw/")
+summary_data <- process_mtb_intersections_batch("data/raw/")
 ```
 
 This will:
 - Process all CSV files in the folder
 - Extract participant ID, date, and time from filenames
 - Calculate driving and intersection metrics for each participant
-- Create a summary CSV file at `output/mtb_multitasking_summary.csv`
+- Create a summary CSV file at `output/mtb_intersections_summary.csv`
 
 ## Output
 
@@ -216,14 +216,14 @@ Your CSV files should contain tab-separated data with these columns:
 
 ## Project Structure
 ```
-mtb_multitasking/
+mtb_intersections/
 ├── R/
-│   └── mtb_multitasking.R       # Main analysis functions
+│   └── mtb_intersections.R       # Main analysis functions
 ├── data/raw/                    # Raw MTB CSV files (gitignored)
 ├── output/                      # Summary CSV files
 ├── docs/                        # Documentation
-│   └── mtb_multitasking.md     # This detailed guide
-├── mtb_multitasking.Rproj      # R project file
+│   └── mtb_intersections.md     # This detailed guide
+├── mtb_intersections.Rproj      # R project file
 ├── .gitignore                  # Git ignore rules
 └── README.md                   # Project overview
 ```
@@ -233,10 +233,10 @@ mtb_multitasking/
 ### Custom Analysis
 ```r
 # Load the functions
-source("R/mtb_multitasking.R")
+source("R/mtb_intersections.R")
 
 # Read data manually for custom analysis
-data <- read_mtb_multitasking_data("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+data <- read_mtb_intersections_data("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 
 # Calculate custom metrics
 custom_metrics <- data %>%
@@ -249,7 +249,7 @@ custom_metrics <- data %>%
 ### Quality Checks
 ```r
 # Check for data quality issues
-summary_data <- process_mtb_multitasking_batch("data/raw/")
+summary_data <- process_mtb_intersections_batch("data/raw/")
 
 # Flag participants with concerning patterns
 risky_drivers <- summary_data %>%
