@@ -42,11 +42,8 @@ Each drive includes slower-moving lead vehicles to assess following behavior und
 ### Running Analysis
 
 ```r
-# Open the R project
-# File → Open Project → multitasking.Rproj
-
-# Load the analysis functions
-source("R/multitask_analysis.R")
+# Load the analysis functions (adjust file path as needed)
+source("[FILE PATH GOES HERE]R/multitasking.R")
 
 # For single file analysis
 result <- analyze_multitask_driving("data/raw/Drive 2 - Drive to Office 2 (Multi-task 1)-28_07_2025-08h51m07s_1234.csv")
@@ -69,7 +66,7 @@ Drive [N] - [Description]-DD_MM_YYYY-HHhMMmSSs_PPPP.csv
 ```
 multitasking/
 ├── R/
-│   └── multitask_analysis.R      # Main analysis functions
+│   └── multitasking.R            # Main analysis functions
 ├── data/raw/                     # Raw CSV files (excluded from git)
 ├── output/                       # Summary CSV files
 ├── docs/                         # Documentation
@@ -171,7 +168,7 @@ multitask2_drives <- summary_data %>% filter(drive_type == "Office2_to_Office1_M
 ## 📄 Documentation
 
 - **[Detailed Usage Guide](docs/multitasking.md)**: Complete setup and analysis instructions
-- **[Function Reference](R/multitask_analysis.R)**: Comprehensive code documentation
+- **[Function Reference](R/multitasking.R)**: Comprehensive code documentation
 - **Troubleshooting**: Common issues and solutions
 
 ## 🤝 Contributing
