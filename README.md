@@ -9,7 +9,7 @@ This repository serves as the central code backup and collaboration hub for all 
 ### Active Research
 - **[Close Following Behavior Analysis](projects/close_following/)** - Comprehensive analysis of tailgating behavior across highway vs rural environments and different following roles
 
-- **[Multi-tasking While Driving](projects/multitasking/)** - 
+- **[Motorcycle Interactions at Intersections](projects/mtb_intersections/)** - 
 
 ## 📁 Repository Structure
 
