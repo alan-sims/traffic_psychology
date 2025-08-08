@@ -39,16 +39,17 @@ read_multitask_driving_data <- function(filepath) {
 
 # Calculate summary metrics for multi-tasking driving scenario
 calculate_multitask_driving_metrics <- function(data) {
-  # Remove rows with NA scenario_section
+  # Remove rows with NA scenario_section and filter out 40 km/h sections
   data_clean <- data %>%
-    filter(!is.na(scenario_section))
+    filter(!is.na(scenario_section)) %>%
+    filter(speed_limit != 40 | is.na(speed_limit))
   
-  # Calculate metrics by scenario section
+  # Calculate metrics by scenario section AND speed limit
   section_metrics <- data_clean %>%
+    mutate(speed_limit = round(speed_limit, 0)) %>% # Round speed limit to whole numbers
     group_by(scenario_section, speed_limit) %>%
     summarise(
       # Basic metrics
-      n_observations = n(),
       duration_seconds = max(time, na.rm = TRUE) - min(time, na.rm = TRUE),
       
       # Speed metrics
@@ -59,7 +60,7 @@ calculate_multitask_driving_metrics <- function(data) {
       speed_coherence = {
         if(!is.na(speed_limit[1]) && speed_limit[1] > 0) {
           # Calculate how close driver speed is to speed limit
-          speed_diff <- abs(driver_speed - speed_limit)
+          speed_diff <- abs(driver_speed - speed_limit[1])
           mean_deviation = mean(speed_diff, na.rm = TRUE)
           # Convert to coherence score (lower deviation = higher coherence)
           max(0, 1 - (mean_deviation / speed_limit[1]))
@@ -91,8 +92,6 @@ calculate_multitask_driving_metrics <- function(data) {
       
       # Time to collision (safety time) metrics
       mean_ttc = {
-        # Calculate TTC as headway distance / relative speed
-        # Using time headway as proxy for TTC
         valid_ttc <- time_headway[!is.na(time_headway) & time_headway > 0 & time_headway <= 100]
         if(length(valid_ttc) > 0) {
           mean(valid_ttc)
@@ -127,13 +126,27 @@ calculate_multitask_driving_metrics <- function(data) {
       mean_brake_force = mean(brake_force[brake_force > 0], na.rm = TRUE),
       max_brake_force = max(brake_force, na.rm = TRUE),
       
-      # Lane ID (most common lane)
-      primary_lane = {
-        lane_counts <- table(lane_number[!is.na(lane_number)])
-        if(length(lane_counts) > 0) {
-          as.numeric(names(lane_counts)[which.max(lane_counts)])
+      # Lane deviation count (number of lane changes)
+      lane_deviation_count = {
+        valid_lanes <- lane_number[!is.na(lane_number)]
+        if(length(valid_lanes) > 1) {
+          # Count transitions between different lanes
+          lane_changes <- sum(diff(valid_lanes) != 0, na.rm = TRUE)
+          # If there are changes, subtract 1 to account for initial lane entry
+          # But only if the first few values are the same (stable lane before changes)
+          if(lane_changes > 0) {
+            # Check if first 10% of values are stable (same lane)
+            initial_portion <- head(valid_lanes, max(1, length(valid_lanes) %/% 5))
+            if(length(unique(initial_portion)) == 1) {
+              max(0, lane_changes - 1)  # Subtract entry transition
+            } else {
+              lane_changes  # Keep all changes if no stable start
+            }
+          } else {
+            0
+          }
         } else {
-          NA_real_
+          0
         }
       },
       
@@ -142,6 +155,18 @@ calculate_multitask_driving_metrics <- function(data) {
     # Handle infinite values
     mutate(
       across(where(is.numeric), ~ifelse(is.infinite(.), NA, .))
+    ) %>%
+    # Create combined section_speed identifier
+    mutate(section_speed = paste0("s", scenario_section, "_", speed_limit)) %>%
+    select(-scenario_section, -speed_limit) %>%
+    # Reshape to wide format with section and speed limit prefixes
+    pivot_wider(
+      names_from = section_speed,
+      values_from = c(duration_seconds, mean_speed, sd_speed, 
+                     speed_coherence, sdlp, mean_headway_distance, sd_headway_distance,
+                     mean_ttc, sd_ttc, collision_occurrence, brake_events, 
+                     mean_brake_force, max_brake_force, lane_deviation_count),
+      names_glue = "{section_speed}_{.value}"
     )
   
   return(section_metrics)
@@ -209,12 +234,12 @@ extract_multitask_participant_info <- function(filename) {
       date_str <- paste(day, month, year, sep="/")
       time_str <- paste(hour, minute, second, sep=":")
       
-      # Extract drive type from filename
+      # Extract drive number from filename
       drive_type <- case_when(
-        grepl("Drive 1|home.*Office 1", base_name, ignore.case = TRUE) ~ "Home_to_Office1",
-        grepl("Drive 2|Office 2.*Multi-task 1", base_name, ignore.case = TRUE) ~ "Office1_to_Office2_Multitask1",
-        grepl("Drive 3|Office 1.*Multi-task 2", base_name, ignore.case = TRUE) ~ "Office2_to_Office1_Multitask2",
-        TRUE ~ "Unknown_Drive"
+        grepl("Drive 1", base_name, ignore.case = TRUE) ~ "1",
+        grepl("Drive 2", base_name, ignore.case = TRUE) ~ "2",
+        grepl("Drive 3", base_name, ignore.case = TRUE) ~ "3",
+        TRUE ~ "Unknown"
       )
       
       return(list(
@@ -232,7 +257,7 @@ extract_multitask_participant_info <- function(filename) {
     participant_id = paste0("MT_", gsub("[^0-9]", "", base_name)),
     date = "Unknown",
     time = "Unknown",
-    drive_type = "Unknown_Drive",
+    drive_type = "Unknown",
     filename = basename(filename)
   ))
 }
@@ -256,11 +281,12 @@ process_multitask_driving_batch <- function(data_dir, output_file = "projects/mu
       # Extract participant info
       participant_info <- extract_multitask_participant_info(filepath)
       
-      # Analyze data
-      summary_data <- analyze_multitask_driving(filepath)
+      # Read and process data
+      data <- read_multitask_driving_data(filepath)
+      metrics <- calculate_multitask_driving_metrics(data)
       
       # Add participant information
-      summary_data %>%
+      metrics %>%
         mutate(
           participant_id = participant_info$participant_id,
           date = participant_info$date,
@@ -277,22 +303,15 @@ process_multitask_driving_batch <- function(data_dir, output_file = "projects/mu
   })
   
   if(nrow(all_summaries) > 0) {
-    # Create a comprehensive summary with all metrics
-    final_summary <- all_summaries %>%
-      select(participant_id, date, time, drive_type, filename, scenario_section, speed_limit,
-             mean_speed, sd_speed, speed_coherence, sdlp, mean_headway_distance, 
-             sd_headway_distance, mean_ttc, sd_ttc, collision_occurrence, 
-             brake_events, mean_brake_force, primary_lane)
-    
     # Write to CSV
-    write_csv(final_summary, output_file)
+    write_csv(all_summaries, output_file)
     cat("\n✅ Batch processing complete!")
     cat("\n📁 Summary saved to:", output_file)
     cat("\n📊 Processed", length(unique(all_summaries$participant_id)), "participants")
     cat("\n🚗 Drive types:", paste(unique(all_summaries$drive_type), collapse = ", "))
-    cat("\n📈 Total", nrow(all_summaries), "section summaries\n")
+    cat("\n📈 Total", nrow(all_summaries), "participant summaries\n")
     
-    return(final_summary)
+    return(all_summaries)
   } else {
     cat("❌ No files processed successfully\n")
     return(tibble())
