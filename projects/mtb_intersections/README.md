@@ -1,4 +1,4 @@
-# MTB Multitasking Analysis
+# MTB Intersections Analysis
 
 Comprehensive analysis of car-motorbike interactions at urban intersections, examining driver decision-making when encountering motorcycles and traffic lights in busy urban environments.
 
@@ -53,16 +53,16 @@ Participants drive through a busy urban environment encountering motorcycles at 
 
 ```r
 # Open the R project
-# File → Open Project → mtb_multitasking.Rproj
+# File → Open Project → mtb_intersections.Rproj
 
 # Load the analysis functions
-source("R/mtb_multitasking.R")
+source("R/mtb_intersections.R")
 
 # For single file analysis
-result <- analyze_mtb_multitasking("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 
 # For batch processing
-summary <- process_mtb_multitasking_batch("data/raw/")
+summary <- process_mtb_intersections_batch("data/raw/")
 ```
 
 ### Expected Data Format
@@ -74,14 +74,14 @@ MBInt-DD_MM_YYYY-HHhMMmSSs_PPPP.csv
 ## 📁 Project Structure
 
 ```
-mtb_multitasking/
+mtb_intersections/
 ├── R/
-│   └── mtb_multitasking.R       # Main analysis functions
+│   └── mtb_intersections.R       # Main analysis functions
 ├── data/raw/                    # Raw CSV files (excluded from git)
 ├── output/                      # Summary CSV files  
 ├── docs/                        # Documentation
-│   └── mtb_multitasking.md     # Detailed usage guide
-├── mtb_multitasking.Rproj      # R project file
+│   └── mtb_intersections.md     # Detailed usage guide
+├── mtb_intersections.Rproj      # R project file
 ├── .gitignore                  # Git ignore rules
 └── README.md                   # This file
 ```
@@ -107,7 +107,7 @@ mtb_multitasking/
 ### Single Participant Analysis
 ```r
 # Analyze one driver's behavior
-result <- analyze_mtb_multitasking("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 
 # View driving metrics
 result$summary_metrics$avg_speed
@@ -121,14 +121,14 @@ result$summary_metrics$int_6_stopped_at_light  # >0 = stopped, 0 = ran light
 ### Batch Processing
 ```r
 # Process all participants
-summary_data <- process_mtb_multitasking_batch("data/raw/")
+summary_data <- process_mtb_intersections_batch("data/raw/")
 
 ```
 
 ## 📄 Documentation
 
-- **[Detailed Usage Guide](docs/mtb_multitasking.md)**: Complete setup and analysis instructions
-- **[Function Reference](R/mtb_multitasking.R)**: Comprehensive code documentation
+- **[Detailed Usage Guide](docs/mtb_intersections.md)**: Complete setup and analysis instructions
+- **[Function Reference](R/mtb_intersections.R)**: Comprehensive code documentation
 - **Troubleshooting**: Common issues and solutions
 
 ## 🤝 Contributing
