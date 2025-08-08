@@ -305,7 +305,7 @@ process_multitask_driving_batch <- function(data_dir, output_file = "projects/mu
 # result <- analyze_multitask_driving("projects/multitasking/data/raw/Drive 2 - Drive to Office 2 (Multi-task 1)-28_07_2025-08h51m07s_1234.csv")
 # 
 # # Batch processing
-summary_data <- process_multitask_driving_batch("projects/multitasking/data/raw/")
+# summary_data <- process_multitask_driving_batch("projects/multitasking/data/raw/")
 # 
 # # View results
 # View(summary_data)
