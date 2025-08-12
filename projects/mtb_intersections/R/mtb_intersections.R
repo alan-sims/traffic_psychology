@@ -1,11 +1,11 @@
-# MTB Multitasking Analysis Functions
+# MTB Intersections Analysis Functions
 # Analysis of car-motorbike interactions at urban intersections
 
 library(tidyverse)
 library(readr)
 
-# Read and parse MTB multitasking data from tab-separated CSV
-read_mtb_multitasking_data <- function(file_path) {
+# Read and parse MTB intersections data from tab-separated CSV
+read_mtb_intersections_data <- function(file_path) {
   
   # Read the tab-separated file
   data <- read_delim(file_path, 
@@ -56,7 +56,7 @@ read_mtb_multitasking_data <- function(file_path) {
   return(clean_data)
 }
 
-# Calculate summary metrics for MTB multitasking data
+# Calculate summary metrics for MTB intersections data
 calculate_mtb_summary_metrics <- function(data) {
   
   # Overall driving metrics
@@ -172,17 +172,17 @@ calculate_mtb_summary_metrics <- function(data) {
   return(combined_metrics)
 }
 
-# Analyze a single MTB multitasking file
-analyze_mtb_multitasking <- function(file_path) {
+# Analyze a single MTB intersections file
+analyze_mtb_intersections <- function(file_path) {
   
-  cat("Analyzing MTB multitasking file:", basename(file_path), "\n")
+  cat("Analyzing MTB intersections file:", basename(file_path), "\n")
   
   # Read and process data
-  raw_data <- read_mtb_multitasking_data(file_path)
+  raw_data <- read_mtb_intersections_data(file_path)
   summary_metrics <- calculate_mtb_summary_metrics(raw_data)
   
   # Print summary
-  cat("\n=== MTB MULTITASKING ANALYSIS ===\n")
+  cat("\n=== MTB INTERSECTIONS ANALYSIS ===\n")
   cat("File:", basename(file_path), "\n")
   cat("Total duration:", round(summary_metrics$total_duration_seconds, 1), "seconds\n")
   cat("Total observations:", summary_metrics$n_observations, "\n\n")
@@ -297,22 +297,22 @@ extract_participant_info <- function(filename) {
   ))
 }
 
-# Process multiple MTB multitasking files and create summary CSV
-process_mtb_multitasking_batch <- function(data_dir, output_file = "projects/mtb_multitasking/output/mtb_multitasking_summary.csv") {
+# Process multiple MTB intersections files and create summary CSV
+process_mtb_intersections_batch <- function(data_dir, output_file = "projects/mtb_intersections/output/mtb_intersections_summary.csv") {
   
   # Create output directory if it doesn't exist
   dir.create(dirname(output_file), showWarnings = FALSE, recursive = TRUE)
   
-  # Find all MTB multitasking CSV files
+  # Find all MTB intersections CSV files
   csv_files <- list.files(data_dir, 
                          pattern = "MBInt.*\\.csv$", 
                          full.names = TRUE)
   
   if(length(csv_files) == 0) {
-    stop("No MTB multitasking CSV files found in ", data_dir)
+    stop("No MTB intersections CSV files found in ", data_dir)
   }
   
-  cat("Found", length(csv_files), "MTB multitasking files to process\n")
+  cat("Found", length(csv_files), "MTB intersections files to process\n")
   
   # Process each file
   all_summaries <- map_dfr(csv_files, function(file_path) {
@@ -323,7 +323,7 @@ process_mtb_multitasking_batch <- function(data_dir, output_file = "projects/mtb
       participant_info <- extract_participant_info(file_path)
       
       # Analyze the file
-      analysis_result <- analyze_mtb_multitasking(file_path)
+      analysis_result <- analyze_mtb_intersections(file_path)
       summary_data <- analysis_result$summary_metrics
       
       # Add participant information
@@ -360,10 +360,10 @@ process_mtb_multitasking_batch <- function(data_dir, output_file = "projects/mtb
 # Example usage:
 # 
 # # Single file analysis
-# result <- analyze_mtb_multitasking("projects/mtb_multitasking/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+# result <- analyze_mtb_intersections("projects/mtb_intersections/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 #         
 # # Batch processing
-summary_data <- process_mtb_multitasking_batch("projects/mtb_multitasking/data/raw/")
+# summary_data <- process_mtb_intersections_batch("projects/mtb_intersections/data/raw/")
 # 
 # # View results
 # View(summary_data)

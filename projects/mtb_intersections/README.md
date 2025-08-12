@@ -55,8 +55,8 @@ Participants drive through a busy urban environment encountering motorcycles at 
 # Open the R project
 # File → Open Project → mtb_intersections.Rproj
 
-# Load the analysis functions
-source("R/mtb_intersections.R")
+# Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from main traffic_psychology repository)
+source("projects/mtb_intersections/R/mtb_intersections.R")
 
 # For single file analysis
 result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
