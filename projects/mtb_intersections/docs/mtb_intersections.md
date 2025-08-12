@@ -123,18 +123,15 @@ data/raw/
 
 #### For a Single File:
 ```r
+# Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from projects/mtb_intersections repository)
 source("R/mtb_intersections.R")
 
-file_path <- "data/raw/MBInt-29_07_2025-11h10m06s_4212.csv"
-results <- analyze_mtb_intersections(file_path)
+# For single file analysis
+result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv") #or the name of whichever file you want to analyze
 ```
 
-#### For Multiple Files (Batch Processing):
-```r
-source("R/mtb_intersections.R")
-
-# Process all files in the folder
-summary_data <- process_mtb_intersections_batch("data/raw/")
+# For batch processing
+summary <- process_mtb_intersections_batch("data/raw/")
 ```
 
 This will:

@@ -62,19 +62,15 @@ After intersection 15, the column shows **"END"** indicating no more intersectio
 library(tidyverse)
 ```
 
-### Single File Processing
 ```r
-# Process one participant
-result <- process_mtb_intersection_data("projects/mtb_multitasking/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+# Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from projects/mtb_intersections repository)
+source("R/mtb_intersection_approach.R")
 
-# View results
-head(result)
-```
+# For single file analysis
+result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv") #or the name of whichever file you want to analyze
 
-### Batch Processing
-```r
-# Process all files in the raw data folder
-process_mtb_intersection_batch("projects/mtb_multitasking/data/raw/")
+# For batch processing
+summary <- process_mtb_intersection_approach_batch("data/raw/")
 ```
 
 This will:
