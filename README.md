@@ -15,18 +15,41 @@ This repository serves as the central code backup and collaboration hub for all 
 
 ```
 traffic_psychology/
-├── README.md                     # This file - lab overview
-├── images/                       # Lab-wide resources and logos
-├── projects/                     # Individual research projects
-│   └── close_following/         # Complete self-contained projects
-│       ├── R/                   # Analysis scripts and functions
-│       ├── data/                # Data structure (raw data excluded)
-│       ├── docs/                # Project documentation
-│       ├── output/              # Results and summary files
-│       └── README.md            # Project-specific documentation
-└── shared/                      # Shared resources (future)
-    ├── R/                       # Common analysis functions
-    └── templates/               # Project templates
+├── README.md
+├── images/                                   
+├── projects/                                 
+│   ├── close_following/                      
+│   │   ├── R/                                
+│   │   ├── data/
+│   │   │   └── raw/
+│   │   │       ├── highway/
+│   │   │       │   ├── being_tailgated/
+│   │   │       │   └── tailgating/
+│   │   │       └── rural/
+│   │   │           ├── being_tailgated/
+│   │   │           └── tailgating/
+│   │   ├── docs/
+│   │   ├── output/
+│   │   ├── close_following.Rproj
+│   │   ├── .gitignore
+│   │   └── README.md
+│   ├── mtb_intersections/
+│   │   ├── R/
+│   │   ├── data/
+│   │   │   └── intersection_processed/
+│   │   ├── docs/
+│   │   ├── output/
+│   │   ├── mtb_intersections.Rproj
+│   │   └── README.md
+│   └── multitasking/
+│       ├── R/
+│       ├── data/
+│       │   └── raw/
+│       ├── docs/
+│       ├── output/
+│       ├── multitasking.Rproj
+│       └── README.md
+└── .gitignore
 ```
 
 ## 🚀 Getting Started
