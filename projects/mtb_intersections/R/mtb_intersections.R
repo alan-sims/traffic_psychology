@@ -360,10 +360,10 @@ process_mtb_intersections_batch <- function(data_dir, output_file = "projects/mt
 # Example usage:
 # 
 # # Single file analysis
-# result <- analyze_mtb_intersections("projects/mtb_intersections/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+# result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 #         
 # # Batch processing
-# summary_data <- process_mtb_intersections_batch("projects/mtb_intersections/data/raw/")
+# summary_data <- process_mtb_intersections_batch("data/raw/")
 # 
 # # View results
 # View(summary_data)

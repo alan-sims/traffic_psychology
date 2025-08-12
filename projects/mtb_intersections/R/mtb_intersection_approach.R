@@ -115,7 +115,7 @@ process_mtb_intersection_approach_data <- function(file_path) {
     transmute(
       participant_id = participant_info$participant_id,
       date = participant_info$date,
-      time = participant_info$time,
+      time = time,
       filename = participant_info$filename,
       intersection_number = intersection_number,
       intersection_distance = distance_to_intersection,
@@ -218,10 +218,10 @@ plot_intersection_approach <- function(processed_data) {
 # Usage examples (commented out to avoid errors when sourcing):
 # 
 # # Single file processing:
-# result <- process_mtb_intersection_approach_data("projects/mtb_intersections/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+# result <- process_mtb_intersection_approach_data("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 # 
 # # Batch processing:
-# process_mtb_intersection_approach_batch("projects/mtb_intersections/data/raw/")
+# process_mtb_intersection_approach_batch("data/raw/")
 # 
 # # Create plot:
 # plot_intersection_approach(result)
