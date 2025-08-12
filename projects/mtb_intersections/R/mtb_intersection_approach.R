@@ -150,8 +150,8 @@ process_mtb_intersection_approach_batch <- function(data_dir, output_dir = "proj
     cat("Processing:", basename(file_path), "\n")
     
     tryCatch({
-      # Process the file
-      processed_data <- process_mtb_intersection_data(file_path)
+      # Process the file - FIXED: use correct function name
+      processed_data <- process_mtb_intersection_approach_data(file_path)
       
       # Extract participant ID for filename
       participant_id <- unique(processed_data$participant_id)[1]
@@ -173,53 +173,55 @@ process_mtb_intersection_approach_batch <- function(data_dir, output_dir = "proj
   cat("\n📁 Output files saved to:", output_dir, "\n")
 }
 
-# Usage:
-# process_mtb_intersection_approach_batch("projects/mtb_intersections/data/raw/")
-
-# Usage examples:
-# Single file:
-# result <- process_mtb_intersection_approach_data("projects/mtb_intersections/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
-
-# Batch processing:
-# all_data <- process_mtb_intersection_approach_batch("projects/mtb_intersections/data/raw/")
-
-
-
-#### PLOTS ####
-
-
-# Updated plot code with intersection number on right axis
-plot_data <- result %>%
-  filter(!is.na(intersection_distance)) %>%
-  mutate(
-    time_seq = row_number() / 60,
-    intersection_numeric = case_when(
-      intersection_number == "END" ~ 16,
-      TRUE ~ as.numeric(intersection_number)
+# Function to create intersection approach plot
+plot_intersection_approach <- function(processed_data) {
+  
+  # Create plot data
+  plot_data <- processed_data %>%
+    filter(!is.na(intersection_distance)) %>%
+    mutate(
+      time_seq = row_number() / 60,  # Assuming 60Hz sampling rate
+      intersection_numeric = case_when(
+        intersection_number == "END" ~ 16,
+        TRUE ~ as.numeric(intersection_number)
+      )
     )
-  )
+  
+  # Create labels for intersections
+  label_data <- plot_data %>%
+    group_by(intersection_number) %>%
+    slice(as.integer(n()/2)) %>%
+    filter(!is.na(intersection_number))
+  
+  # Create the plot
+  ggplot(plot_data, aes(x = time_seq)) +
+    geom_line(aes(y = intersection_distance), color = "blue") +
+    geom_line(aes(y = intersection_numeric * 50), color = "red") +
+    geom_text(data = label_data, 
+              aes(x = time_seq, y = intersection_distance + 20, label = intersection_number),
+              size = 3, color = "black") +
+    scale_y_continuous(
+      name = "Distance to Intersection (meters)",
+      sec.axis = sec_axis(~ . / 50, name = "Approaching Intersection Number")
+    ) +
+    labs(title = "Distance to Intersection and Intersection Approaching", 
+         x = "Time (seconds)") +
+    theme_minimal() +
+    theme(
+      axis.title.y.left = element_text(color = "blue"),
+      axis.text.y.left = element_text(color = "blue"),
+      axis.title.y.right = element_text(color = "red"),
+      axis.text.y.right = element_text(color = "red")
+    )
+}
 
-# Create labels for intersections
-label_data <- plot_data %>%
-  group_by(intersection_number) %>%
-  slice(as.integer(n()/2)) %>%
-  filter(!is.na(intersection_number))
-
-ggplot(plot_data, aes(x = time_seq)) +
-  geom_line(aes(y = intersection_distance), color = "blue") +
-  geom_line(aes(y = intersection_numeric * 50), color = "red") +
-  geom_text(data = label_data, 
-            aes(x = time_seq, y = intersection_distance + 20, label = intersection_number),
-            size = 3, color = "black") +
-  scale_y_continuous(
-    name = "Distance to Intersection (meters)",
-    sec.axis = sec_axis(~ . / 50, name = "Approaching Intersection Number")
-  ) +
-  labs(title = "Distance to Intersection and Intersection Approaching", x = "Time (seconds)") +
-  theme_minimal() +
-  theme(
-    axis.title.y.left = element_text(color = "blue"),
-    axis.text.y.left = element_text(color = "blue"),
-    axis.title.y.right = element_text(color = "red"),
-    axis.text.y.right = element_text(color = "red")
-  )
+# Usage examples (commented out to avoid errors when sourcing):
+# 
+# # Single file processing:
+# result <- process_mtb_intersection_approach_data("projects/mtb_intersections/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+# 
+# # Batch processing:
+# process_mtb_intersection_approach_batch("projects/mtb_intersections/data/raw/")
+# 
+# # Create plot:
+# plot_intersection_approach(result)
