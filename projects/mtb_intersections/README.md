@@ -49,12 +49,9 @@ Participants drive through a busy urban environment encountering motorcycles at 
 - R (4.0+) with tidyverse
 - RStudio or Positron IDE
 
-### Running Analysis
+### Running Analysis - Intersection Data
 
 ```r
-# Open the R project
-# File → Open Project → mtb_intersections.Rproj
-
 # Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from main traffic_psychology repository)
 source("projects/mtb_intersections/R/mtb_intersections.R")
 
@@ -63,6 +60,18 @@ result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.cs
 
 # For batch processing
 summary <- process_mtb_intersections_batch("data/raw/")
+```
+
+### Running Analysis - Intersection Approach
+```r
+# Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from main traffic_psychology repository)
+source("projects/mtb_intersections/R/mtb_intersection_approach.R")
+
+# For single file analysis
+result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+
+# For batch processing
+summary <- process_mtb_intersection_approach_batch("data/raw/")
 ```
 
 ### Expected Data Format

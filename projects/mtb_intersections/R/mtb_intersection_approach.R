@@ -79,7 +79,7 @@ determine_intersection_number <- function(distance_to_intersection) {
 }
 
 # Function to process single MTB file into intersection distance format
-process_mtb_intersection_data <- function(file_path) {
+process_mtb_intersection_approach_data <- function(file_path) {
   
   # Read the tab-separated file
   data <- read_delim(file_path, 
@@ -127,7 +127,7 @@ process_mtb_intersection_data <- function(file_path) {
 }
 
 # Function to process multiple MTB files into separate output files
-process_mtb_intersection_batch <- function(data_dir, output_dir = "projects/mtb_multitasking/data/intersection_processed/") {
+process_mtb_intersection_approach_batch <- function(data_dir, output_dir = "projects/mtb_intersections/data/intersection_processed/") {
   
   # Create output directory if it doesn't exist
   if(!dir.exists(output_dir)) {
@@ -174,14 +174,14 @@ process_mtb_intersection_batch <- function(data_dir, output_dir = "projects/mtb_
 }
 
 # Usage:
-# process_mtb_intersection_batch("projects/mtb_multitasking/data/raw/")
+# process_mtb_intersection_approach_batch("projects/mtb_intersections/data/raw/")
 
 # Usage examples:
 # Single file:
-result <- process_mtb_intersection_data("projects/mtb_multitasking/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
+# result <- process_mtb_intersection_approach_data("projects/mtb_intersections/data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
 
 # Batch processing:
-all_data <- process_mtb_intersection_batch("projects/mtb_multitasking/data/raw/")
+# all_data <- process_mtb_intersection_approach_batch("projects/mtb_intersections/data/raw/")
 
 
 
