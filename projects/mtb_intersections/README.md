@@ -53,7 +53,7 @@ Participants drive through a busy urban environment encountering motorcycles at 
 
 ```r
 # Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from main traffic_psychology repository)
-source("projects/mtb_intersections/R/mtb_intersections.R")
+source("R/mtb_intersections.R")
 
 # For single file analysis
 result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
@@ -65,7 +65,7 @@ summary <- process_mtb_intersections_batch("data/raw/")
 ### Running Analysis - Intersection Approach
 ```r
 # Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from main traffic_psychology repository)
-source("projects/mtb_intersections/R/mtb_intersection_approach.R")
+source("R/mtb_intersection_approach.R")
 
 # For single file analysis
 result <- analyze_mtb_intersections("data/raw/MBInt-29_07_2025-11h10m06s_4212.csv")
