@@ -62,6 +62,8 @@ time | speed | headway_distance | lateral_shift | braking | time_headway
 
 ### Running Analysis
 
+# Load the analysis functions (adjust file path as needed, the below one should be correect if you are working from projects/mtb_filtering repository)
+
 ```r
 # Load the analysis functions
 source("R/mtb_filtering.R")
@@ -116,66 +118,6 @@ mtb_filtering/
 - **Speed effects**: 90km/h motorcycles may cause more dramatic behavioral changes
 - **Individual differences**: Variation in sensitivity to motorcycle presence
 
-## 🎯 Usage Examples
-
-### Single Participant Analysis
-```r
-# Analyze one driver's response to motorcycle filtering
-result <- analyze_mtb_filtering("data/raw/Motorcycles_100kph_Illegal_Filtering_Middle_Lane-01_04_2025-18h12m43s_1402.csv")
-
-# View behavioral metrics
-result$metrics$mean_speed          # Average driving speed
-result$metrics$sd_lateral_shift    # SDLP (stress/stability indicator)
-result$metrics$mean_headway_distance # Following distance behavior
-```
-
-### Batch Processing & Condition Comparison
-```r
-# Process all participants
-summary_data <- process_mtb_filtering_batch("data/raw/")
-
-# Compare conditions
-library(tidyverse)
-
-# Speed effects (Legal vs Illegal)
-summary_data %>%
-  group_by(condition) %>%
-  summarise(
-    mean_speed = mean(mean_speed, na.rm = TRUE),
-    mean_sdlp = mean(sd_lateral_shift, na.rm = TRUE)
-  )
-
-# Position effects (Middle vs Side)
-summary_data %>%
-  mutate(position = ifelse(grepl("Middle", condition), "Middle", "Side")) %>%
-  group_by(position) %>%
-  summarise(avg_sdlp = mean(sd_lateral_shift, na.rm = TRUE))
-```
-
-## 🔬 Integration with Multi-Modal Data
-
-This driving behavior analysis is designed to integrate with:
-
-### Eye-Tracking Analysis
-- **Motorcycle detection events**: When/if drivers visually notice filtering motorcycles
-- **Attention patterns**: Looking behavior during filtering events
-- **Detection vs. behavior**: Correlation between noticing and behavioral response
-
-### Physiological Analysis (HexoSkin)
-- **Stress responses**: Heart rate/skin conductance during motorcycle encounters
-- **Anticipatory responses**: Physiological changes before behavioral changes
-- **Recovery patterns**: How quickly drivers return to baseline after filtering events
-
-### Statistical Analysis Pipeline
-```r
-# Example: Combine behavioral and eye-tracking data
-behavioral_data <- process_mtb_filtering_batch("data/raw/")
-# eyetracking_data <- process_eyetracking_batch("eyetracking/raw/")
-# physiological_data <- process_hexoskin_batch("physiological/raw/")
-
-# Multi-modal analysis
-# combined_analysis <- merge_multimodal_data(behavioral_data, eyetracking_data, physiological_data)
-```
 
 ## 📄 Documentation
 
